@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class TableViz extends Application {
     //    public void start(Stage stage) throws IOException {
@@ -49,6 +50,13 @@ public class TableViz extends Application {
 //        }
 //
 //    }
+    public static void panic(Exception e) {
+        System.err.println("[PANIC] Stack trace:");
+        e.printStackTrace();
+        System.err.println("[PANIC] Error: Cannot create error message: " + e.getMessage());
+        System.err.println("[PANIC] EXITING");
+        System.exit(0);
+    }
 
     private void showLoginWindow(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("login-view.fxml"));
@@ -60,6 +68,7 @@ public class TableViz extends Application {
 
         stage.setScene(scene);
         stage.setTitle("Login");
+        stage.resizableProperty().set(false);
         stage.show();
     }
 

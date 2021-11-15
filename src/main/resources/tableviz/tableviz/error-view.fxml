@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Line?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER"
+      fx:controller="tableviz.tableviz.ErrorController" stylesheets="@error-view.css" id="root">
+    <padding>
+        <Insets left="20" top="20" right="20" bottom="20"/>
+    </padding>
+
+    <Label fx:id="heading"/>
+    <HBox id="shortReasonContainer" alignment="CENTER_LEFT">
+        <Text fx:id="shortReason"/>
+    </HBox>
+    <HBox id="lineContainer" alignment="CENTER_LEFT">
+        <Line id="line" fx:id="hline"/>
+    </HBox>
+    <HBox alignment="CENTER_LEFT">
+        <Label id="reasonLabel">Full error text:</Label>
+    </HBox>
+    <HBox id="longReasonContainer">
+        <Text fx:id="longReason"/>
+    </HBox>
+    <HBox id="okContainer" alignment="CENTER">
+        <Button fx:id="ok" onAction="#onOkClick"/>
+    </HBox>
+</VBox>

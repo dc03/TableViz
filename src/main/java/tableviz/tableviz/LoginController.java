@@ -3,11 +3,13 @@ package tableviz.tableviz;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class LoginController {
@@ -48,8 +50,34 @@ public class LoginController {
             handler.openConnection(dbNameInput.getText(), userNameInput.getText(), passwordInput.getText());
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
+            Scene scene = new Scene(loader.load());
+            MainUIController ui = loader.getController();
+
+
         } catch (SQLException ex) {
-            errorLabel.setText("Error: " + ex.getMessage());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("error-view.fxml"));
+            try {
+                Scene scene = new Scene(loader.load());
+                Stage stage2 = new Stage();
+
+                ErrorController controller = loader.getController();
+                controller.shouldExit = true;
+                controller.stage = stage2;
+
+                controller.setHeading("Error");
+                controller.setShortReason("Could not open MySQL connection");
+                controller.setLongReason("SQLException : " + ex.getMessage() + "\nSQLState     : " + ex.getSQLState()
+                        + "\nVendor Error : " + ex.getErrorCode());
+                controller.setStageResize();
+                controller.setLineWidth();
+
+                stage2.setScene(scene);
+                stage2.show();
+            } catch (IOException e) {
+                TableViz.panic(e);
+            }
+        } catch (IOException e) {
+            TableViz.panic(e);
         }
     }
 

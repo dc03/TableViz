@@ -1,0 +1,59 @@
+#root {
+    -fx-background-color: white;
+}
+
+#heading {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-text-fill: #ffab91;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px;
+    -fx-min-width: inherit;
+    -fx-text-alignment: center;
+}
+
+#shortReasonContainer {
+    -fx-padding: 10px;
+}
+
+#shortReason {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-font-size: 15px;
+}
+
+#lineContainer {
+    -fx-padding: 10px;
+}
+
+#reasonLabel {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-text-fill: #c97b63;
+    -fx-font-size: 15px;
+    -fx-padding: 10px;
+    -fx-font-weight: bold;
+}
+
+#longReasonContainer {
+    -fx-border-color: #dfdfdf;
+    -fx-padding: 15px;
+    -fx-background-color: #efefef;
+}
+
+#longReason {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-font-size: 14px;
+}
+
+#okContainer {
+    -fx-padding: 15px;
+}
+
+#ok {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-background-color: #ffddc1;
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 8px;
+    -fx-padding: 3 30 3 30;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
