@@ -1,0 +1,45 @@
+#root {
+    -fx-background-color: white;
+}
+
+Label {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-font-size: 14px;
+}
+
+GridPane > Label {
+    -fx-padding: 0px 20px 0px 0px;
+    -fx-text-fill: #c97b63;
+}
+
+#login {
+    /*-fx-padding: 0px 0px 20px 0px;*/
+    -fx-font-family: "Ubuntu Mono";
+    -fx-font-size: 20px;
+    -fx-text-alignment: center;
+    -fx-font-weight: 700;
+    -fx-alignment: center;
+    -fx-border-width: 0;
+}
+
+.jank {
+    -fx-padding: 0px 0px 10px 0px;
+}
+
+#submit {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-background-color: #ffddc1;
+    -fx-background-insets: 0,1,2;
+    -fx-background-radius: 8px;
+    -fx-padding: 3 30 3 30;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+}
+
+#submit:hover {
+    -fx-opacity: 75%;
+}
+
+#errorLabel {
+    -fx-text-fill: red;
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml" spacing="25"
+      fx:controller="tableviz.tableviz.LoginController" stylesheets="@login-view.css" id="root">
+    <padding>
+        <Insets left="20" top="20" right="20" bottom="20"/>
+    </padding>
+
+
+    <Label id="login" fx:id="loginPrompt" text="Enter login details"/>
+
+    <GridPane alignment="CENTER">
+        <Label fx:id="dbNamePrompt" text="Database name" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label styleClass="jank" text=" " GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="dbNameInput" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+        <Label fx:id="userNamePrompt" text="Username" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <Label styleClass="jank" text=" " GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="userNameInput" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+
+        <Label fx:id="passwordPrompt" text="Password" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <Label styleClass="jank" text=" " GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <PasswordField fx:id="passwordInput" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
+    </GridPane>
+
+    <Button id="submit" onAction="#submit">Submit</Button>
+
+    <Label fx:id="errorLabel"/>
+</VBox>
