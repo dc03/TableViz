@@ -1,0 +1,98 @@
+#mainMenu {
+    -fx-background-color: #ffddc1;
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+}
+
+.menu-item .label {
+    -fx-text-fill: black;
+}
+
+.menu-item:focused {
+    -fx-background-color: #ffab91;
+}
+
+.menu:hover, .menu:focused, .menu:selected, .menu:pressed, .menu:showing {
+    -fx-background-color: #ffab91;
+    -fx-text-fill: black;
+}
+
+.context-menu {
+    -fx-background-color: #ffddc1;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+    -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
+}
+
+.list-view, .list-view:focused, .table-view, .table-view:focused {
+    -fx-background-color: transparent;
+}
+
+.list-cell:selected {
+    -fx-background-color: #ffddc1;
+    -fx-border-color: #ffab91;
+    -fx-text-fill: black;
+}
+
+.table-view {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #ffab91;
+}
+
+.table-view .column-header-background .label {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-font-weight: 600;
+}
+
+.table-view .column-header, .table-view .column-header .filler {
+    -fx-background-color: #ffddc1;
+    -fx-border-color: #ffab91;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #eeeeee;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #ffddc1;
+    -fx-text-background-color: black;
+    -fx-table-cell-border-color: #ffab91;
+}
+
+.table-view .virtual-flow .scroll-bar:vertical,
+.table-view .virtual-flow .scroll-bar:vertical .track,
+.table-view .virtual-flow .scroll-bar:vertical .track-background,
+.table-view .virtual-flow .scroll-bar:horizontal,
+.table-view .virtual-flow .scroll-bar:horizontal .track,
+.table-view .virtual-flow .scroll-bar:horizontal .track-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .increment-button, .table-view .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 2em;
+
+}
+
+.table-view .scroll-bar:horizontal .track,
+.table-view .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-border-color: #ffddc1;
+    -fx-background-radius: 2em;
+    -fx-border-radius: 2em;
+}
+
+.table-view .scroll-bar:horizontal .thumb,
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #ffddc1;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 2em;
+
+}

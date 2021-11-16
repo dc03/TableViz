@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="root" fx:id="mainView" stylesheets="@main-view.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.2" fx:controller="tableviz.tableviz.MainUIController">
+    <top>
+        <MenuBar fx:id="mainMenu" />
+    </top>
+
+    <left>
+        <ListView fx:id="tableList" />
+    </left>
+
+    <center>
+        <TableView fx:id="tableView" />
+    </center>
+</BorderPane>
