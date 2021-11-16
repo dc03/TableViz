@@ -52,30 +52,17 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("main-view.fxml"));
             Scene scene = new Scene(loader.load());
             MainUIController ui = loader.getController();
+            ui.stage = stage;
+            ui.stage.setResizable(true);
+            ui.initializeTableList(handler);
 
-
+            stage.hide();
+            stage.setMaximized(true);
+            stage.setScene(scene);
+            stage.show();
         } catch (SQLException ex) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("error-view.fxml"));
-            try {
-                Scene scene = new Scene(loader.load());
-                Stage stage2 = new Stage();
-
-                ErrorController controller = loader.getController();
-                controller.shouldExit = true;
-                controller.stage = stage2;
-
-                controller.setHeading("Error");
-                controller.setShortReason("Could not open MySQL connection");
-                controller.setLongReason("SQLException : " + ex.getMessage() + "\nSQLState     : " + ex.getSQLState()
-                        + "\nVendor Error : " + ex.getErrorCode());
-                controller.setStageResize();
-                controller.setLineWidth();
-
-                stage2.setScene(scene);
-                stage2.show();
-            } catch (IOException e) {
-                TableViz.panic(e);
-            }
+            new ErrorBox("Error", "Could not open MySQL connection",
+                    TableViz.formatLongSQLError(ex), true).show();
         } catch (IOException e) {
             TableViz.panic(e);
         }
