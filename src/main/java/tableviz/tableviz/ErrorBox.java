@@ -7,10 +7,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ErrorBox {
-    private String heading = "";
-    private String shortReason = "";
-    private String longReason = "";
-    private boolean shouldExit = false;
+    private final String heading;
+    private final String shortReason;
+    private final String longReason;
+    private final boolean shouldExit;
 
     ErrorBox(String heading_, String shortReason_, String longReason_, boolean shouldExit_) {
         heading = heading_;

@@ -2,15 +2,12 @@ package tableviz.tableviz;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.Vector;
 
 interface InputPromptOnSubmit {
@@ -25,14 +22,12 @@ public class InputPromptController {
     @FXML
     private Button submitButton = new Button();
 
-    Vector<Label> labels = new Vector<>();
-    Vector<Node> inputs = new Vector<>();
+    final Vector<Label> labels = new Vector<>();
+    final Vector<Node> inputs = new Vector<>();
     InputPromptOnSubmit onSubmit = null;
     Stage stage = null;
 
     int passwordPrompt = -1;
-    int numPrompts;
-
 
     @FXML
     private void submit(ActionEvent event) {
@@ -53,7 +48,6 @@ public class InputPromptController {
     }
 
     public void setPrompts(String... names) {
-        numPrompts = names.length;
         int i = 0;
         for (String name : names) {
             labels.add(new Label(name));
@@ -75,14 +69,6 @@ public class InputPromptController {
             container.add(inputs.get(j), 2, j);
         }
 
-    }
-
-    public void show() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("input-prompt-view.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        stage.setScene(scene);
-        stage.show();
     }
 
     public Vector<String> getValues() {

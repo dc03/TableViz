@@ -25,10 +25,10 @@ public class MainUIController {
     @FXML
     private TableView<Map> tableView = new TableView<>();
 
-    private HBox data_controls = new HBox();
-    private Menu file = new Menu("File");
-    private Menu options = new Menu("Options");
-    private Menu help = new Menu("Help");
+    private final HBox data_controls = new HBox();
+    private final Menu file = new Menu("File");
+    private final Menu options = new Menu("Options");
+    private final Menu help = new Menu("Help");
 
     private void exit(ActionEvent event) {
         stage.hide();

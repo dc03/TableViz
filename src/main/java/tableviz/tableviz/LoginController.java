@@ -69,5 +69,4 @@ public class LoginController {
     }
 
     public Stage stage = null;
-    public TableViz main = null;
 }

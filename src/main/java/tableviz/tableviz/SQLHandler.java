@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Vector;
 
 class TableRow {
-    public Map<String, String> data;
+    public final Map<String, String> data;
 
     TableRow(Map<String, String> data_) {
         data = data_;
@@ -14,8 +14,8 @@ class TableRow {
 }
 
 class TableData {
-    public TableRow columns;
-    public Vector<TableRow> data;
+    public final TableRow columns;
+    public final Vector<TableRow> data;
 
     TableData(TableRow columns_, Vector<TableRow> data_) {
         columns = columns_;

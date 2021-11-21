@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class TableViz extends Application {
     public static String version = "0.0.1";
@@ -31,7 +30,6 @@ public class TableViz extends Application {
 
         LoginController controller = loader.getController();
         controller.stage = stage;
-        controller.main = this;
 
         stage.setScene(scene);
         stage.setTitle("Login");

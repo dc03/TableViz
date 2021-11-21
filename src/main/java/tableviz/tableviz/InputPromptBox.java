@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class InputPromptBox {
-    InputPromptOnSubmit onSubmit = null;
+    InputPromptOnSubmit onSubmit;
     String[] prompts = null;
     int passwordPrompt = -1;
 
