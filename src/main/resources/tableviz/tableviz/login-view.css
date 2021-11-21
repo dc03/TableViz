@@ -1,3 +1,5 @@
+@import "button.css";
+
 #root {
     -fx-background-color: white;
 }
@@ -24,20 +26,6 @@ GridPane > Label {
 
 .jank {
     -fx-padding: 0px 0px 10px 0px;
-}
-
-#submit {
-    -fx-font-family: "JetBrains Mono", "Fira Code";
-    -fx-background-color: #ffddc1;
-    -fx-background-insets: 0,1,2;
-    -fx-background-radius: 8px;
-    -fx-padding: 3 30 3 30;
-    -fx-text-fill: black;
-    -fx-font-size: 14px;
-}
-
-#submit:hover {
-    -fx-opacity: 75%;
 }
 
 #errorLabel {

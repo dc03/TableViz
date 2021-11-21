@@ -34,7 +34,7 @@
         <PasswordField fx:id="passwordInput" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
     </GridPane>
 
-    <Button id="submit" onAction="#submit">Submit</Button>
+    <Button styleClass="button" id="submit" onAction="#submit">Submit</Button>
 
     <Label fx:id="errorLabel"/>
 </VBox>
