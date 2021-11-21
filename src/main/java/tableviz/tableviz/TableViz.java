@@ -15,7 +15,7 @@ public class TableViz extends Application {
     public static void panic(Exception e) {
         System.err.println("[PANIC] Stack trace:");
         e.printStackTrace();
-        System.err.println("[PANIC] Error: Cannot create error message: " + e.getMessage());
+        System.err.println("[PANIC] Error: " + e.getMessage());
         System.err.println("[PANIC] EXITING");
         System.exit(0);
     }
