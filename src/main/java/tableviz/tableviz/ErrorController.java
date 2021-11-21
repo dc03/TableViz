@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -13,6 +14,8 @@ public class ErrorController {
     private Label heading = new Label();
     @FXML
     private Text shortReason = new Text();
+    @FXML
+    private VBox outerContainer = new VBox();
     @FXML
     private Line hline = new Line();
     @FXML
@@ -35,7 +38,11 @@ public class ErrorController {
     }
 
     public void setLongReason(String reason) {
-        longReason.setText(reason);
+        if (reason.equals("")) {
+            outerContainer.setVisible(false);
+        } else {
+            longReason.setText(reason);
+        }
     }
 
     public void onOkClick(ActionEvent actionEvent) {

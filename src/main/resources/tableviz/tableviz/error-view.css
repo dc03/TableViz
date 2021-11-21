@@ -1,3 +1,5 @@
+@import "button.css";
+
 #root {
     -fx-background-color: white;
 }
@@ -46,14 +48,4 @@
 
 #okContainer {
     -fx-padding: 15px;
-}
-
-#ok {
-    -fx-font-family: "JetBrains Mono", "Fira Code";
-    -fx-background-color: #ffddc1;
-    -fx-background-insets: 0,1,2;
-    -fx-background-radius: 8px;
-    -fx-padding: 3 30 3 30;
-    -fx-text-fill: black;
-    -fx-font-size: 14px;
 }

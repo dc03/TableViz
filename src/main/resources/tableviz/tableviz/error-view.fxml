@@ -18,16 +18,18 @@
     <HBox id="shortReasonContainer" alignment="CENTER_LEFT">
         <Text fx:id="shortReason"/>
     </HBox>
-    <HBox id="lineContainer" alignment="CENTER_LEFT">
-        <Line id="line" fx:id="hline"/>
-    </HBox>
-    <HBox alignment="CENTER_LEFT">
-        <Label id="reasonLabel">Full error text:</Label>
-    </HBox>
-    <HBox id="longReasonContainer">
-        <Text fx:id="longReason"/>
-    </HBox>
+    <VBox fx:id="outerContainer" alignment="CENTER_LEFT">
+        <HBox id="lineContainer" alignment="CENTER_LEFT">
+            <Line id="line" fx:id="hline"/>
+        </HBox>
+        <HBox alignment="CENTER_LEFT">
+            <Label id="reasonLabel">Full error text:</Label>
+        </HBox>
+        <HBox id="longReasonContainer">
+            <Text fx:id="longReason"/>
+        </HBox>
+    </VBox>
     <HBox id="okContainer" alignment="CENTER">
-        <Button fx:id="ok" onAction="#onOkClick"/>
+        <Button styleClass="button" fx:id="ok" onAction="#onOkClick"/>
     </HBox>
 </VBox>
