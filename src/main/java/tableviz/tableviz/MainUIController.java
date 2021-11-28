@@ -95,7 +95,7 @@ public class MainUIController {
         logo.setPreserveRatio(true);
         logo.setFitHeight(150);
 
-        Label info = new Label("TableViz - A MySQL table visualizer");
+        Label info = new Label("TableViz - A MySQL table visualizer (v" + TableViz.version + ")");
         info.getStyleClass().add("info");
         Label sources = new Label("Sources hosted at:");
         Hyperlink link = new Hyperlink("https://github.com/dc03/tableviz");
