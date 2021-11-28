@@ -30,6 +30,7 @@ public class TableViz extends Application {
 
         LoginController controller = loader.getController();
         controller.stage = stage;
+        controller.main = this;
 
         stage.setScene(scene);
         stage.setTitle("Login");

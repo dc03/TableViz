@@ -5,12 +5,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class LoginController {
+    @FXML
+    ImageView logo = new ImageView();
+
     @FXML
     private Label loginPrompt = new Label();
 
@@ -57,6 +61,7 @@ public class LoginController {
             Scene scene = new Scene(loader.load());
             MainUIController ui = loader.getController();
             ui.stage = stage;
+            ui.main = main;
             ui.stage.setResizable(true);
             ui.initializeTableList(handler);
 
@@ -73,4 +78,5 @@ public class LoginController {
     }
 
     public Stage stage = null;
+    public TableViz main = null;
 }
