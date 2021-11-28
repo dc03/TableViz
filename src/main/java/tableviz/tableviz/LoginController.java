@@ -4,9 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -32,19 +30,25 @@ public class LoginController {
     private PasswordField passwordInput = new PasswordField();
 
     @FXML
-    private Label errorLabel = new Label();
-
-    @FXML
     public void submit(ActionEvent actionEvent) {
         if (dbNameInput.getText().isBlank()) {
-            errorLabel.setText("Error: Database name cannot be empty");
+            Alert dialog = new Alert(Alert.AlertType.ERROR, "Database name cannot be empty");
+            dialog.getDialogPane().getStylesheets().addAll(
+                    getClass().getResource("button.css").toExternalForm(),
+                    getClass().getResource("login-view.css").toExternalForm());
+            dialog.getDialogPane().setStyle("-fx-background-color: white");
+            dialog.showAndWait();
             return;
         } else if (userNameInput.getText().isBlank()) {
-            errorLabel.setText("Error: Username cannot be empty");
+            Alert dialog = new Alert(Alert.AlertType.ERROR, "Username cannot be empty");
+            dialog.getDialogPane().getStylesheets().addAll(
+                    getClass().getResource("button.css").toExternalForm(),
+                    getClass().getResource("login-view.css").toExternalForm());
+            dialog.getDialogPane().setStyle("-fx-background-color: white");
+            dialog.showAndWait();
             return;
         }
 
-        errorLabel.setText("");
         SQLHandler handler = new SQLHandler();
         try {
             handler.openConnection(dbNameInput.getText(), userNameInput.getText(), passwordInput.getText());

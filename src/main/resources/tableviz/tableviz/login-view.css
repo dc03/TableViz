@@ -27,7 +27,3 @@ GridPane > Label {
 .jank {
     -fx-padding: 0px 0px 10px 0px;
 }
-
-#errorLabel {
-    -fx-text-fill: red;
-}
