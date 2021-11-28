@@ -33,11 +33,6 @@ public class MainUIController {
     @FXML
     private GridPane tableControls = new GridPane();
 
-    private final HBox data_controls = new HBox();
-    private final Menu file = new Menu("File");
-    private final Menu options = new Menu("Options");
-    private final Menu help = new Menu("Help");
-
     private void exit(ActionEvent event) {
         stage.hide();
         if (handler != null) {
@@ -74,18 +69,18 @@ public class MainUIController {
         });
         prompt.setPasswordInput(2);
         prompt.setPrompts("Database name", "Username", "Password");
+        prompt.setCancellable(true);
 
         try {
             prompt.show();
         } catch (IOException e) {
             TableViz.panic(e);
-            new ErrorBox("Error", e.getMessage(), "", false).show();
         }
 
     }
 
     private void showHelp(ActionEvent event) {
-        Dialog dialog = new Dialog();
+        Dialog<String> dialog = new Dialog<String>();
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("help.css").toExternalForm());
         dialog.getDialogPane().getStyleClass().add("help");
 
@@ -143,6 +138,7 @@ public class MainUIController {
         setupOptionsMenu();
         setupHelpMenu();
 
+        tableView.setMinWidth(550);
         mainMenu.getMenus().addAll(file, options, help);
     }
 
@@ -164,6 +160,61 @@ public class MainUIController {
             }
 
             tableView.setItems(data);
+            tableView.setOnMouseClicked(mouseEvent -> {
+                Map<String, String> row = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
+                GridPane details = new GridPane();
+                int i = 0;
+                for (Map.Entry<String, String> attr : row.entrySet()) {
+                    Label column = new Label(attr.getKey());
+                    TextField value = new TextField(attr.getValue());
+                    Button edit = new Button("Edit");
+                    HBox valueContainer = new HBox(value);
+                    valueContainer.getStyleClass().add("value-container");
+                    column.getStyleClass().add("row-details-column");
+                    value.getStyleClass().add("row-details-value");
+
+                    edit.getStyleClass().add("button");
+                    edit.setOnAction(event -> {
+                        InputPromptBox box = new InputPromptBox(controller -> {
+                            String newValue = controller.getValues().get(0);
+                            value.setText(newValue);
+                        });
+                        box.setPrompts(column.getText());
+                        box.setCancellable(true);
+                        try {
+                            box.show();
+                        } catch (IOException e) {
+                            TableViz.panic(e);
+                        }
+                    });
+
+                    details.add(column, 0, i);
+                    details.add(new Label("="), 1, i);
+                    details.add(valueContainer, 2, i);
+                    details.add(edit, 3, i);
+                    i++;
+                }
+                details.getStyleClass().add("row-details");
+
+                Button delete = new Button("Delete");
+                delete.setOnAction(event -> {
+                    handler.deleteRow(row);
+                    loadTable(table);
+                });
+                Button update = new Button("Update");
+                update.setOnAction(event -> {
+                });
+
+                HBox buttons = new HBox();
+                buttons.setAlignment(Pos.CENTER);
+                buttons.getChildren().addAll(update, delete);
+                buttons.getStyleClass().add("buttons");
+                buttons.setSpacing(10);
+
+                VBox vbox = new VBox(details, buttons);
+                rowDetails.getChildren().add(vbox);
+                rowDetails.setVisible(true);
+            });
             tableView.getColumns().setAll(columns);
         } catch (SQLException e) {
             new ErrorBox("Warning", "Could not load table data", TableViz.formatLongSQLError(e), false).show();
@@ -180,13 +231,23 @@ public class MainUIController {
             content.addAll(tables);
             tableList.setItems(content);
             tableList.setOnMouseClicked(mouseEvent -> {
-                loadTable(tableList.getSelectionModel().getSelectedItem());
+                table = tableList.getSelectionModel().getSelectedItem();
+                loadTable(table);
+                tableControls.setVisible(true);
+                rowDetails.setVisible(false);
+                rowDetails.getChildren().clear();
                 mainView.setBottom(data_controls);
             });
         } catch (SQLException e) {
             new ErrorBox("Warning", "Could not load table names", TableViz.formatLongSQLError(e), false).show();
         }
     }
+
+    private final HBox data_controls = new HBox();
+    private final Menu file = new Menu("File");
+    private final Menu options = new Menu("Options");
+    private final Menu help = new Menu("Help");
+    private String table = "";
 
     public Stage stage = null;
     public SQLHandler handler = null;

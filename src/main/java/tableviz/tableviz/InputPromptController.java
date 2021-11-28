@@ -21,17 +21,25 @@ public class InputPromptController {
     private GridPane container = new GridPane();
     @FXML
     private Button submitButton = new Button();
+    @FXML
+    private Button cancelButton = new Button();
 
     final Vector<Label> labels = new Vector<>();
     final Vector<Node> inputs = new Vector<>();
     InputPromptOnSubmit onSubmit = null;
     Stage stage = null;
+    private boolean isCancellable = false;
 
     int passwordPrompt = -1;
 
     @FXML
     private void submit(ActionEvent event) {
         onSubmit.onSubmit(this);
+        stage.hide();
+    }
+
+    @FXML
+    private void cancel(ActionEvent event) {
         stage.hide();
     }
 
@@ -84,5 +92,17 @@ public class InputPromptController {
         }
 
         return values;
+    }
+
+    public void setCancellable(boolean value) {
+        isCancellable = value;
+    }
+
+    public boolean getCancellable() {
+        return isCancellable;
+    }
+
+    public void showCancelButton() {
+        cancelButton.setVisible(true);
     }
 }

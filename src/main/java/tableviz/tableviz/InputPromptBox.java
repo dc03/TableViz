@@ -11,6 +11,8 @@ public class InputPromptBox {
     String[] prompts = null;
     int passwordPrompt = -1;
 
+    boolean isCancellable = false;
+
     InputPromptBox(InputPromptOnSubmit onSubmit_) {
         onSubmit = onSubmit_;
     }
@@ -30,11 +32,24 @@ public class InputPromptBox {
         controller.setPasswordInput(passwordPrompt);
         controller.setPrompts(prompts);
         controller.setOnSubmit(onSubmit);
+        controller.setCancellable(isCancellable);
+
+        if (isCancellable) {
+            controller.showCancelButton();
+        }
 
         Stage stage = new Stage();
         controller.setStage(stage);
         stage.setScene(scene);
         stage.show();
         stage.setResizable(false);
+    }
+
+    public void setCancellable(boolean value) {
+        isCancellable = value;
+    }
+
+    public boolean getCancellable() {
+        return isCancellable;
     }
 }

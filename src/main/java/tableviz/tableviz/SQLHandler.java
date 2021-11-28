@@ -72,4 +72,12 @@ public class SQLHandler {
 
         return new TableData(new TableRow(columns), rows);
     }
+
+    public void deleteRow(Map<String, String> values) {
+
+    }
+
+    public void updateRow(Map<String, String> oldValues, Map<String, String> newValues) {
+
+    }
 }

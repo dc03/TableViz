@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+
 <VBox alignment="CENTER" xmlns:fx="http://javafx.com/fxml" spacing="25"
       fx:controller="tableviz.tableviz.InputPromptController" stylesheets="@input-prompt-view.css"
       fx:id="mainContainer" id="root">
-    <GridPane fx:id="container" />
-    <Button styleClass="button" fx:id="submitButton" onAction="#submit">Submit</Button>
+    <GridPane fx:id="container"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button styleClass="button" fx:id="submitButton" onAction="#submit">Submit</Button>
+        <Button styleClass="button" fx:id="cancelButton" onAction="#cancel" visible="false">Cancel</Button>
+    </HBox>
 </VBox>
