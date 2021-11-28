@@ -1,0 +1,29 @@
+@import "button.css";
+
+.help {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-background-color: white;
+}
+
+.info {
+    -fx-padding: 0px 15px 15px 15px;
+}
+
+.link {
+    -fx-text-fill: #ffab91;
+    -fx-padding: 0px 15px 15px 15px;
+}
+
+.link:hover {
+    -fx-text-fill: #c97b63;
+}
+
+.copyright {
+    -fx-text-fill: #777777;
+    -fx-font-size: 12px;
+}
+
+.license {
+    -fx-text-fill: #777777;
+    -fx-font-size: 12px;
+}

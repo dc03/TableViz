@@ -15,4 +15,12 @@
     <center>
         <TableView fx:id="tableView" />
     </center>
+
+    <right>
+        <GridPane fx:id="rowDetails" visible="false" />
+    </right>
+
+    <bottom>
+        <GridPane fx:id="tableControls" visible="false" />
+    </bottom>
 </BorderPane>

@@ -4,10 +4,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,6 +28,10 @@ public class MainUIController {
     private ListView<String> tableList = new ListView<>();
     @FXML
     private TableView<Map> tableView = new TableView<>();
+    @FXML
+    private GridPane rowDetails = new GridPane();
+    @FXML
+    private GridPane tableControls = new GridPane();
 
     private final HBox data_controls = new HBox();
     private final Menu file = new Menu("File");
@@ -76,6 +84,41 @@ public class MainUIController {
 
     }
 
+    private void showHelp(ActionEvent event) {
+        Dialog dialog = new Dialog();
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("help.css").toExternalForm());
+        dialog.getDialogPane().getStyleClass().add("help");
+
+        ButtonType button = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+
+        HBox container = new HBox();
+
+        VBox vbox = new VBox();
+        vbox.setAlignment(Pos.CENTER);
+
+        ImageView logo = new ImageView(getClass().getResource("logo.png").toExternalForm());
+        logo.setPreserveRatio(true);
+        logo.setFitHeight(150);
+
+        Label info = new Label("TableViz - A MySQL table visualizer");
+        info.getStyleClass().add("info");
+        Label sources = new Label("Sources hosted at:");
+        Hyperlink link = new Hyperlink("https://github.com/dc03/tableviz");
+        link.getStyleClass().add("link");
+        link.setOnAction(t -> main.getHostServices().showDocument(link.getText()));
+        Label copyright = new Label("Copyright (C) 2021 Dhruv Chawla");
+        copyright.getStyleClass().add("copyright");
+        Label license = new Label("Licensed under the MIT license");
+        license.getStyleClass().add("license");
+
+        vbox.getChildren().addAll(info, sources, link, copyright, license);
+        container.getChildren().addAll(logo, vbox);
+
+        dialog.getDialogPane().getButtonTypes().add(button);
+        dialog.getDialogPane().setContent(container);
+        dialog.showAndWait();
+    }
+
     private void setupFileMenu() {
         MenuItem exitButton = new MenuItem("Exit");
         MenuItem switchDatabase = new MenuItem("Switch databases");
@@ -89,7 +132,9 @@ public class MainUIController {
     }
 
     private void setupHelpMenu() {
-
+        MenuItem helpButton = new MenuItem("About");
+        helpButton.setOnAction(this::showHelp);
+        help.getItems().addAll(helpButton);
     }
 
     @FXML
@@ -145,4 +190,5 @@ public class MainUIController {
 
     public Stage stage = null;
     public SQLHandler handler = null;
+    public TableViz main = null;
 }
