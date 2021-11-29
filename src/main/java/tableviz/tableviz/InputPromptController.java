@@ -8,6 +8,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Vector;
 
 interface InputPromptOnSubmit {
@@ -23,14 +25,6 @@ public class InputPromptController {
     private Button submitButton = new Button();
     @FXML
     private Button cancelButton = new Button();
-
-    final Vector<Label> labels = new Vector<>();
-    final Vector<Node> inputs = new Vector<>();
-    InputPromptOnSubmit onSubmit = null;
-    Stage stage = null;
-    private boolean isCancellable = false;
-
-    int passwordPrompt = -1;
 
     @FXML
     private void submit(ActionEvent event) {
@@ -61,8 +55,16 @@ public class InputPromptController {
             labels.add(new Label(name));
             if (i == passwordPrompt) {
                 inputs.add(new PasswordField());
+            } else if (textAreas.contains(i)) {
+                inputs.add(new TextArea());
+                if (defaultPrompts.containsKey(i)) {
+                    ((TextArea)(inputs.lastElement())).setText(defaultPrompts.get(i));
+                }
             } else {
                 inputs.add(new TextField());
+                if (defaultPrompts.containsKey(i)) {
+                    ((TextField)(inputs.lastElement())).setText(defaultPrompts.get(i));
+                }
             }
             i++;
         }
@@ -79,12 +81,22 @@ public class InputPromptController {
 
     }
 
+    public void setTextAreas(Integer[] areas) {
+        Collections.addAll(textAreas, areas);
+    }
+
+    public void setDefaultPrompts(HashMap<Integer, String> defaults) {
+        defaultPrompts = defaults;
+    }
+
     public Vector<String> getValues() {
         Vector<String> values = new Vector<>();
         int i = 0;
         for (Node node : inputs) {
             if (i == passwordPrompt) {
                 values.add(((PasswordField) node).getText());
+            } else if (textAreas.contains(i)) {
+                values.add(((TextArea) node).getText());
             } else {
                 values.add(((TextField) node).getText());
             }
@@ -105,4 +117,14 @@ public class InputPromptController {
     public void showCancelButton() {
         cancelButton.setVisible(true);
     }
+
+    private final Vector<Label> labels = new Vector<>();
+    private final Vector<Node> inputs = new Vector<>();
+    private InputPromptOnSubmit onSubmit = null;
+    private boolean isCancellable = false;
+    private int passwordPrompt = -1;
+    private Vector<Integer> textAreas = new Vector<>();
+    private HashMap<Integer, String> defaultPrompts = new HashMap<>();
+
+    public Stage stage = null;
 }

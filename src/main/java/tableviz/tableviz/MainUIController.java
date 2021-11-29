@@ -60,6 +60,7 @@ public class MainUIController {
                 } else {
                     handler.openConnection(db, username, password);
                     initializeTableList(handler);
+                    stage.setTitle("TableViz");
                     tableView.getItems().clear();
                     tableView.getColumns().clear();
                 }
@@ -179,6 +180,8 @@ public class MainUIController {
                             String newValue = controller.getValues().get(0);
                             value.setText(newValue);
                         });
+                        box.setTextAreas(0);
+                        box.addDefaultPrompt(0, value.getText());
                         box.setPrompts(column.getText());
                         box.setCancellable(true);
                         try {
@@ -216,6 +219,7 @@ public class MainUIController {
                 rowDetails.setVisible(true);
             });
             tableView.getColumns().setAll(columns);
+            stage.setTitle("TableViz - " + tableName);
         } catch (SQLException e) {
             new ErrorBox("Warning", "Could not load table data", TableViz.formatLongSQLError(e), false).show();
         }
