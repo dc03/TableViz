@@ -68,6 +68,7 @@ public class LoginController {
             stage.hide();
             stage.setMaximized(true);
             stage.setScene(scene);
+            stage.setTitle("TableViz");
             stage.show();
         } catch (SQLException ex) {
             new ErrorBox("Error", "Could not open MySQL connection",
