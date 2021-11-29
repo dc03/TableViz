@@ -82,7 +82,9 @@ public class InputPromptController {
     }
 
     public void setTextAreas(Integer[] areas) {
-        Collections.addAll(textAreas, areas);
+        if (!textAreas.isEmpty()) {
+            Collections.addAll(textAreas, areas);
+        }
     }
 
     public void setDefaultPrompts(HashMap<Integer, String> defaults) {

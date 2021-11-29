@@ -27,6 +27,7 @@
 
 .list-view, .list-view:focused, .table-view, .table-view:focused {
     -fx-background-color: transparent;
+    -fx-border-color: #ffddc1;
 }
 
 .list-cell:selected {
@@ -101,7 +102,7 @@
 
 #rowDetails {
     -fx-font-family: "JetBrains Mono", "Fira Code";
-    -fx-border-color: #ffab91;
+    -fx-border-color: #ffddc1;
     -fx-background-color: white;
     -fx-padding: 0px 10px 0px 0px;
 }
@@ -131,4 +132,48 @@
 
 .buttons {
     -fx-padding: 25px 0px 0px 0px
+}
+
+#tableControls {
+    -fx-background-color: white;
+    -fx-border-color: #ffddc1;
+}
+
+.controls-columns {
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+    -fx-padding: 10px;
+}
+
+.controls-columns > CheckBox {
+    -fx-border-radius: 5px;
+    -fx-border-color: #ffab91;
+    -fx-padding: 10px;
+}
+
+.controls-buttons {
+    -fx-padding: 10px;
+}
+
+.check-box {
+    /* default properties */
+    selected-box-color: #ffddc1;
+    box-color: white;
+    mark-color: black;
+}
+
+.check-box:selected > .box {
+    /* background color for selected checkbox */
+    -fx-background-color: selected-box-color;
+}
+
+.check-box > .box {
+    /* background color of unselected checkbox */
+    -fx-background-color: box-color;
+    -fx-border-color: #ffab91;
+}
+
+.check-box:selected > .box > .mark,
+.check-box:indeterminate  > .box > .mark {
+    /* modify mark color */
+    -fx-background-color: mark-color;
 }

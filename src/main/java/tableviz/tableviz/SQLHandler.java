@@ -73,11 +73,51 @@ public class SQLHandler {
         return new TableData(new TableRow(columns), rows);
     }
 
-    public void deleteRow(Map<String, String> values) {
-
+    public void deleteRow(String tableName, Map<String, String> values) throws SQLException {
+        Statement statement = connection.createStatement();
+        StringBuilder query = new StringBuilder("DELETE FROM `" + tableName + "` WHERE ");
+        int i = 0;
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            query.append("`").append(entry.getKey()).append("` = '").append(entry.getValue()).append("'");
+            if (i < values.size() - 1) {
+                query.append(" and ");
+            }
+            i++;
+        }
+        statement.executeUpdate(query.toString());
     }
 
     public void updateRow(Map<String, String> oldValues, Map<String, String> newValues) {
 
+    }
+
+    public void beginTransaction() throws SQLException {
+        connection.createStatement().execute("START TRANSACTION");
+    }
+
+    public void commitChanges() throws SQLException {
+        connection.createStatement().execute("COMMIT");
+    }
+
+    public void discardChanges() throws SQLException {
+        connection.createStatement().execute("ROLLBACK");
+    }
+
+    public void deleteTable(String tableName) throws SQLException {
+        connection.createStatement().execute("DROP TABLE `" + tableName + "`");
+    }
+
+    public void insertIntoTable(String tableName, Vector<String> values) throws SQLException {
+        StringBuilder query = new StringBuilder("INSERT INTO `" + tableName + "` VALUES(");
+        int i = 0;
+        for (String str : values) {
+            query.append("'").append(str).append("'");
+            if (i < values.size() - 1) {
+                query.append(", ");
+            }
+            i++;
+        }
+        query.append(")");
+        connection.createStatement().executeUpdate(query.toString());
     }
 }

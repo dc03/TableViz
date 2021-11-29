@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Vector;
 
@@ -31,7 +32,7 @@ public class MainUIController {
     @FXML
     private GridPane rowDetails = new GridPane();
     @FXML
-    private GridPane tableControls = new GridPane();
+    private VBox tableControls = new VBox();
 
     private void exit(ActionEvent event) {
         stage.hide();
@@ -61,6 +62,8 @@ public class MainUIController {
                     handler.openConnection(db, username, password);
                     initializeTableList(handler);
                     stage.setTitle("TableViz");
+                    tableControls.setVisible(false);
+                    tableControls.getChildren().clear();
                     tableView.getItems().clear();
                     tableView.getColumns().clear();
                 }
@@ -72,6 +75,10 @@ public class MainUIController {
         prompt.setPrompts("Database name", "Username", "Password");
         prompt.setCancellable(true);
 
+        if (refreshButton != null) {
+            refreshButton.setDisable(true);
+        }
+
         try {
             prompt.show();
         } catch (IOException e) {
@@ -81,7 +88,7 @@ public class MainUIController {
     }
 
     private void showHelp(ActionEvent event) {
-        Dialog<String> dialog = new Dialog<String>();
+        Dialog<String> dialog = new Dialog<>();
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("help.css").toExternalForm());
         dialog.getDialogPane().getStyleClass().add("help");
 
@@ -115,6 +122,43 @@ public class MainUIController {
         dialog.showAndWait();
     }
 
+    private void refreshDatabase(ActionEvent event) {
+        try {
+            Vector<String> tables = handler.getTables();
+            tableControls.setVisible(false);
+            tableControls.getChildren().clear();
+
+            tableView.getItems().clear();
+            tableView.getColumns().clear();
+            setupTableList(tables);
+        } catch (SQLException e) {
+            new ErrorBox("Warning", "Could not load table names", TableViz.formatLongSQLError(e), false).show();
+        }
+    }
+
+    private void setupTableList(Vector<String> tables) {
+        ObservableList<String> content = FXCollections.observableArrayList();
+        content.addAll(tables);
+        tableControls.getChildren().clear();
+        tableList.setItems(content);
+        tableList.setOnMouseClicked(mouseEvent -> {
+            table = tableList.getSelectionModel().getSelectedItem();
+            loadTable(table);
+            tableControls.setVisible(true);
+            rowDetails.setVisible(false);
+            rowDetails.getChildren().clear();
+//            data_controls.setVisible(true);
+
+            if (refreshButton != null) {
+                refreshButton.setDisable(false);
+            }
+        });
+    }
+
+    private void refreshTable(ActionEvent event) {
+        loadTable(table);
+    }
+
     private void setupFileMenu() {
         MenuItem exitButton = new MenuItem("Exit");
         MenuItem switchDatabase = new MenuItem("Switch databases");
@@ -124,7 +168,13 @@ public class MainUIController {
     }
 
     private void setupOptionsMenu() {
-
+        MenuItem refreshDB = new MenuItem("Refresh Database");
+        refreshDB.setOnAction(this::refreshDatabase);
+        MenuItem refreshTable = new MenuItem("Refresh current table");
+        refreshTable.setOnAction(this::refreshTable);
+        refreshButton = refreshTable;
+        refreshTable.setDisable(true);
+        options.getItems().addAll(refreshDB, refreshTable);
     }
 
     private void setupHelpMenu() {
@@ -163,6 +213,9 @@ public class MainUIController {
             tableView.setItems(data);
             tableView.setOnMouseClicked(mouseEvent -> {
                 Map<String, String> row = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
+                if (row == null) {
+                    return;
+                }
                 GridPane details = new GridPane();
                 int i = 0;
                 for (Map.Entry<String, String> attr : row.entrySet()) {
@@ -201,8 +254,12 @@ public class MainUIController {
 
                 Button delete = new Button("Delete");
                 delete.setOnAction(event -> {
-                    handler.deleteRow(row);
-                    loadTable(table);
+                    try {
+                        handler.deleteRow(tableName, row);
+                        loadTable(table);
+                    } catch (SQLException e) {
+                        new ErrorBox("Error", "Could not delete row", TableViz.formatLongSQLError(e), false).show();
+                    }
                 });
                 Button update = new Button("Update");
                 update.setOnAction(event -> {
@@ -218,6 +275,154 @@ public class MainUIController {
                 rowDetails.getChildren().add(vbox);
                 rowDetails.setVisible(true);
             });
+
+            HBox container = new HBox();
+            HBox columnChecks = new HBox();
+
+            for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
+                CheckBox button = new CheckBox(column.getKey());
+                button.setSelected(true);
+                button.setOnAction(event -> {
+                    String target = button.getText();
+                    for (TableColumn<Map, String> column1 : columns) {
+                        if (column1.getText().equals(target)) {
+                            column1.setVisible(!column1.isVisible());
+                        }
+                    }
+                });
+                columnChecks.getChildren().add(button);
+            }
+
+            container.getStyleClass().add("controls-buttons");
+            container.setAlignment(Pos.CENTER);
+            container.setSpacing(15);
+            columnChecks.getStyleClass().add("controls-columns");
+            columnChecks.setAlignment(Pos.CENTER);
+            columnChecks.setSpacing(20);
+
+            Button delete = new Button("Delete table");
+            Button insert = new Button("Insert data");
+            Button filter = new Button("Filter");
+            Button transactEnable = new Button("Begin transaction");
+            Button commit = new Button("Commit changes");
+            Button discardChanges = new Button("Discard changes");
+            commit.setDisable(true);
+            discardChanges.setDisable(true);
+
+            delete.setOnAction(event -> {
+                VBox cont = new VBox();
+                cont.setAlignment(Pos.CENTER);
+                cont.getStylesheets().add(getClass().getResource("login-view.css").toExternalForm());
+
+                Label warning1 = new Label("Are you sure you want to delete table '" + table + "'?");
+                cont.getChildren().add(warning1);
+                TextField input = new TextField();
+
+                Label warning2 = new Label("Note: This action cannot be undone!");
+                Label warning3 = new Label("Type 'Yes, do as I say!' in the box below to confirm");
+                Label jank = new Label();
+                jank.getStyleClass().add("jank");
+                cont.getChildren().addAll(warning2, warning3, jank, input);
+
+                ButtonType delete1 = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
+                ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                Dialog<String> dialog = new Dialog<>();
+                dialog.getDialogPane().getStylesheets().addAll(
+                        getClass().getResource("button.css").toExternalForm(),
+                        getClass().getResource("login-view.css").toExternalForm());
+                dialog.getDialogPane().setStyle("-fx-background-color: white");
+                dialog.getDialogPane().setContent(cont);
+                dialog.getDialogPane().getButtonTypes().addAll(cancel, delete1);
+
+                Button delete2 = (Button) dialog.getDialogPane().lookupButton(delete1);
+                delete2.setOnAction(event1 -> {
+                    if (input.getText().equals("Yes, do as I say!")) {
+                        try {
+                            handler.deleteTable(table);
+                        } catch (SQLException e) {
+                            new ErrorBox("Error", "Could not delete table", TableViz.formatLongSQLError(e), false).show();
+                        }
+                        refreshDatabase(null);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Could not delete table '" + table + "'");
+                        alert.getDialogPane().getStylesheets().addAll(
+                                getClass().getResource("button.css").toExternalForm(),
+                                getClass().getResource("login-view.css").toExternalForm());
+                        alert.getDialogPane().setStyle("-fx-background-color: white");
+                        alert.setTitle("Error");
+                        alert.showAndWait();
+                    }
+                });
+
+                dialog.setTitle("Delete table");
+                dialog.show();
+            });
+
+            insert.setOnAction(event -> {
+                InputPromptBox box = new InputPromptBox(controller -> {
+                    try {
+                        handler.insertIntoTable(table, controller.getValues());
+                        loadTable(table);
+                    } catch (SQLException e) {
+                        new ErrorBox("Error", "Could not insert values into table", TableViz.formatLongSQLError(e), false).show();
+                    }
+                });
+
+                String[] values = new String[tableData.columns.data.size()];
+                int i = 0;
+                for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
+                    values[i++] = column.getKey();
+                }
+                box.setPrompts(values);
+                try {
+                    box.show();
+                } catch (IOException e) {
+                    TableViz.panic(e);
+                }
+            });
+
+            transactEnable.setOnAction(event -> {
+                try {
+                    handler.beginTransaction();
+                } catch (SQLException e) {
+                    new ErrorBox("Error", "Could not start transaction", TableViz.formatLongSQLError(e), false).show();
+                }
+                isTransaction = true;
+                commit.setDisable(false);
+                discardChanges.setDisable(false);
+            });
+
+            commit.setOnAction(event -> {
+                try {
+                    handler.commitChanges();
+                    loadTable(table);
+                } catch (SQLException e) {
+                    new ErrorBox("Error", "Could not commit changes", TableViz.formatLongSQLError(e), false).show();
+                }
+                isTransaction = false;
+                commit.setDisable(false);
+                discardChanges.setDisable(false);
+            });
+
+            discardChanges.setOnAction(event -> {
+                try {
+                    handler.discardChanges();
+                    loadTable(table);
+                } catch (SQLException e) {
+                    new ErrorBox("Error", "Could not rollback changes", TableViz.formatLongSQLError(e), false).show();
+                }
+                isTransaction = false;
+                commit.setDisable(true);
+                discardChanges.setDisable(true);
+            });
+
+            container.getChildren().addAll(delete, insert, filter, transactEnable, commit, discardChanges);
+
+            tableControls.getChildren().clear();
+            tableControls.getChildren().addAll(columnChecks, container);
+            tableControls.setMinHeight(200);
+
             tableView.getColumns().setAll(columns);
             stage.setTitle("TableViz - " + tableName);
         } catch (SQLException e) {
@@ -230,28 +435,19 @@ public class MainUIController {
         this.handler = handler;
         try {
             Vector<String> tables = handler.getTables();
-
-            ObservableList<String> content = FXCollections.observableArrayList();
-            content.addAll(tables);
-            tableList.setItems(content);
-            tableList.setOnMouseClicked(mouseEvent -> {
-                table = tableList.getSelectionModel().getSelectedItem();
-                loadTable(table);
-                tableControls.setVisible(true);
-                rowDetails.setVisible(false);
-                rowDetails.getChildren().clear();
-                mainView.setBottom(data_controls);
-            });
+            setupTableList(tables);
         } catch (SQLException e) {
             new ErrorBox("Warning", "Could not load table names", TableViz.formatLongSQLError(e), false).show();
         }
     }
 
-    private final HBox data_controls = new HBox();
+//    private final HBox data_controls = new HBox();
     private final Menu file = new Menu("File");
     private final Menu options = new Menu("Options");
     private final Menu help = new Menu("Help");
     private String table = "";
+    private MenuItem refreshButton = null;
+    private boolean isTransaction = false;
 
     public Stage stage = null;
     public SQLHandler handler = null;
