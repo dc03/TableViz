@@ -82,7 +82,7 @@ public class InputPromptController {
     }
 
     public void setTextAreas(Integer[] areas) {
-        if (!textAreas.isEmpty()) {
+        if (areas.length > 0) {
             Collections.addAll(textAreas, areas);
         }
     }
