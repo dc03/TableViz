@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Vector;
 
 public class MainUIController {
@@ -81,7 +82,7 @@ public class MainUIController {
         }
 
         try {
-            prompt.show();
+            prompt.show("InputPromptController");
         } catch (IOException e) {
             TableViz.panic(e);
         }
@@ -193,130 +194,147 @@ public class MainUIController {
         mainMenu.getMenus().addAll(file, options, help);
     }
 
+    private Vector<TableColumn<Map, String>> setTableData(TableData tableData) {
+        ObservableList<Map> data = FXCollections.observableArrayList();
+
+        for (TableRow row : tableData.data) {
+            data.add(row.data);
+        }
+
+        Vector<TableColumn<Map, String>> columns = new Vector<>();
+        for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
+            TableColumn<Map, String> col = new TableColumn<>(column.getKey());
+            col.setCellValueFactory(new MapValueFactory<>(column.getKey()));
+            columns.add(col);
+        }
+
+        tableView.setItems(data);
+        tableView.getColumns().setAll(columns);
+        tableCols = columns;
+        return columns;
+    }
+
+    private void setTableViewOnClick(String tableName) {
+        tableView.setOnMouseClicked(mouseEvent -> {
+            Map<String, String> row = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
+            if (row == null) {
+                return;
+            }
+            GridPane details = new GridPane();
+            int i = 0;
+            for (Map.Entry<String, String> attr : row.entrySet()) {
+                Label column = new Label(attr.getKey());
+                TextField value = new TextField(attr.getValue());
+                Button edit = new Button("Edit");
+                HBox valueContainer = new HBox(value);
+                valueContainer.getStyleClass().add("value-container");
+                column.getStyleClass().add("row-details-column");
+                value.getStyleClass().add("row-details-value");
+
+                edit.getStyleClass().add("button");
+                edit.setOnAction(event -> {
+                    InputPromptBox box = new InputPromptBox(controller -> {
+                        String newValue = controller.getValues().get(0);
+                        value.setText(newValue);
+                    });
+                    box.setTextAreas(0);
+                    box.addDefaultPrompt(0, value.getText());
+                    box.setPrompts(column.getText());
+                    box.setCancellable(true);
+                    try {
+                        box.show("InputPromptController");
+                    } catch (IOException e) {
+                        TableViz.panic(e);
+                    }
+                });
+
+                details.add(column, 0, i);
+                details.add(new Label("="), 1, i);
+                details.add(valueContainer, 2, i);
+                details.add(edit, 3, i);
+                i++;
+            }
+            details.getStyleClass().add("row-details");
+
+            Button delete = new Button("Delete");
+            delete.setOnAction(event -> {
+                try {
+                    handler.deleteRow(tableName, row);
+                    tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
+                    rowDetails.setVisible(false);
+                    rowDetails.getChildren().clear();
+                } catch (SQLException e) {
+                    new ErrorBox("Error", "Could not delete row", TableViz.formatLongSQLError(e), false).show();
+                }
+            });
+            Button update = new Button("Update");
+            update.setOnAction(event -> {
+                try {
+                    Map<String, String> selected = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
+                    HashMap<String, String> newValues = new HashMap<>();
+                    ObservableList<Node> children = details.getChildren();
+                    for (int j = 0; j < children.size(); j += 4) {
+                        Label columnName = (Label) children.get(j);
+                        TextField columnValue = (TextField) (((HBox) children.get(j + 2)).getChildren().get(0));
+                        newValues.put(columnName.getText(), columnValue.getText());
+                    }
+                    handler.updateRow(table, selected, newValues);
+                    tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
+                    tableView.getItems().add(newValues);
+                    tableView.getSelectionModel().select(newValues);
+                } catch (SQLException e) {
+                    new ErrorBox("Error", "Could not update row", TableViz.formatLongSQLError(e), false).show();
+                }
+            });
+
+            HBox buttons = new HBox();
+            buttons.setAlignment(Pos.CENTER);
+            buttons.getChildren().addAll(update, delete);
+            buttons.getStyleClass().add("buttons");
+            buttons.setSpacing(10);
+
+            VBox vbox = new VBox(details, buttons);
+            rowDetails.getChildren().add(vbox);
+            rowDetails.setVisible(true);
+        });
+    }
+
+    private HBox setTableColumnHideButtons(TableData tableData, Vector<TableColumn<Map, String>> columns) {
+        HBox columnChecks = new HBox();
+        for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
+            CheckBox button = new CheckBox(column.getKey());
+            button.setSelected(true);
+            button.setOnAction(event -> {
+                String target = button.getText();
+                for (TableColumn<Map, String> column1 : columns) {
+                    if (column1.getText().equals(target)) {
+                        column1.setVisible(!column1.isVisible());
+                    }
+                }
+            });
+            columnChecks.getChildren().add(button);
+        }
+        columnChecks.getStyleClass().add("controls-columns");
+        columnChecks.setAlignment(Pos.CENTER);
+        columnChecks.setSpacing(20);
+        return columnChecks;
+    }
+
     @FXML
     private void loadTable(String tableName) {
         try {
             TableData tableData = handler.getTableData(tableName);
-            ObservableList<Map> data = FXCollections.observableArrayList();
 
-            for (TableRow row : tableData.data) {
-                data.add(row.data);
-            }
-
-            Vector<TableColumn<Map, String>> columns = new Vector<>();
-            for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
-                TableColumn<Map, String> col = new TableColumn<>(column.getKey());
-                col.setCellValueFactory(new MapValueFactory<>(column.getKey()));
-                columns.add(col);
-            }
-
-            tableView.setItems(data);
-            tableView.setOnMouseClicked(mouseEvent -> {
-                Map<String, String> row = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
-                if (row == null) {
-                    return;
-                }
-                GridPane details = new GridPane();
-                int i = 0;
-                for (Map.Entry<String, String> attr : row.entrySet()) {
-                    Label column = new Label(attr.getKey());
-                    TextField value = new TextField(attr.getValue());
-                    Button edit = new Button("Edit");
-                    HBox valueContainer = new HBox(value);
-                    valueContainer.getStyleClass().add("value-container");
-                    column.getStyleClass().add("row-details-column");
-                    value.getStyleClass().add("row-details-value");
-
-                    edit.getStyleClass().add("button");
-                    edit.setOnAction(event -> {
-                        InputPromptBox box = new InputPromptBox(controller -> {
-                            String newValue = controller.getValues().get(0);
-                            value.setText(newValue);
-                        });
-                        box.setTextAreas(0);
-                        box.addDefaultPrompt(0, value.getText());
-                        box.setPrompts(column.getText());
-                        box.setCancellable(true);
-                        try {
-                            box.show();
-                        } catch (IOException e) {
-                            TableViz.panic(e);
-                        }
-                    });
-
-                    details.add(column, 0, i);
-                    details.add(new Label("="), 1, i);
-                    details.add(valueContainer, 2, i);
-                    details.add(edit, 3, i);
-                    i++;
-                }
-                details.getStyleClass().add("row-details");
-
-                Button delete = new Button("Delete");
-                delete.setOnAction(event -> {
-                    try {
-                        handler.deleteRow(tableName, row);
-                        tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
-                        rowDetails.setVisible(false);
-                        rowDetails.getChildren().clear();
-                    } catch (SQLException e) {
-                        new ErrorBox("Error", "Could not delete row", TableViz.formatLongSQLError(e), false).show();
-                    }
-                });
-                Button update = new Button("Update");
-                update.setOnAction(event -> {
-                    try {
-                        Map<String, String> selected = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
-                        HashMap<String, String> newValues = new HashMap<>();
-                        ObservableList<Node> children = details.getChildren();
-                        for (int j = 0; j < children.size(); j += 4) {
-                            Label columnName = (Label) children.get(j);
-                            TextField columnValue = (TextField) (((HBox) children.get(j + 2)).getChildren().get(0));
-                            newValues.put(columnName.getText(), columnValue.getText());
-                        }
-                        handler.updateRow(table, selected, newValues);
-                        tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
-                        tableView.getItems().add(newValues);
-                        tableView.getSelectionModel().select(newValues);
-                    } catch (SQLException e) {
-                        new ErrorBox("Error", "Could not update row", TableViz.formatLongSQLError(e), false).show();
-                    }
-                });
-
-                HBox buttons = new HBox();
-                buttons.setAlignment(Pos.CENTER);
-                buttons.getChildren().addAll(update, delete);
-                buttons.getStyleClass().add("buttons");
-                buttons.setSpacing(10);
-
-                VBox vbox = new VBox(details, buttons);
-                rowDetails.getChildren().add(vbox);
-                rowDetails.setVisible(true);
-            });
+            Vector<TableColumn<Map, String>> columns = setTableData(tableData);
+            setTableViewOnClick(tableName);
 
             HBox container = new HBox();
-            HBox columnChecks = new HBox();
-
-            for (Map.Entry<String, String> column : tableData.columns.data.entrySet()) {
-                CheckBox button = new CheckBox(column.getKey());
-                button.setSelected(true);
-                button.setOnAction(event -> {
-                    String target = button.getText();
-                    for (TableColumn<Map, String> column1 : columns) {
-                        if (column1.getText().equals(target)) {
-                            column1.setVisible(!column1.isVisible());
-                        }
-                    }
-                });
-                columnChecks.getChildren().add(button);
-            }
+            HBox columnChecks = setTableColumnHideButtons(tableData, columns);
 
             container.getStyleClass().add("controls-buttons");
             container.setAlignment(Pos.CENTER);
             container.setSpacing(15);
-            columnChecks.getStyleClass().add("controls-columns");
-            columnChecks.setAlignment(Pos.CENTER);
-            columnChecks.setSpacing(20);
+
 
             Button delete = new Button("Delete table");
             Button insert = new Button("Insert data");
@@ -394,7 +412,58 @@ public class MainUIController {
                 }
                 box.setPrompts(values);
                 try {
-                    box.show();
+                    box.show("InputPromptController");
+                } catch (IOException e) {
+                    TableViz.panic(e);
+                }
+            });
+
+            filter.setOnAction(event -> {
+                String[] prompts = new String[columns.size()];
+                for (int i = 0; i < prompts.length; i++) {
+                    prompts[i] = columns.get(i).getText();
+                }
+
+                InputPromptBox box = new InputPromptBox(controller -> {
+                    try {
+                        HashMap<String, String> filters = new HashMap<>();
+                        for (int i = 0; i < prompts.length; i++) {
+                            if (!controller.getValues().get(i).isEmpty()) {
+                                filters.put(prompts[i], controller.getValues().get(i));
+                            }
+                        }
+                        TableData filtered;
+                        if (filters.isEmpty()) {
+                            filtered = handler.getTableData(table);
+                        } else {
+                            filtered = handler.filterValues(table, filters);
+                        }
+                        Vector<TableColumn<Map, String>> filteredColumns = setTableData(filtered);
+                        Vector<TableColumn<Map, String>> temp = tableCols;
+                        setTableViewOnClick(tableName);
+
+                        int i = 0;
+                        HBox checks = setTableColumnHideButtons(filtered, filteredColumns);
+                        for (TableColumn<Map, String> column : temp) {
+                            CheckBox check = (CheckBox) (checks.getChildren().get(i));
+                            System.out.println(column.getText() + column.isVisible());
+                            for (TableColumn<Map, String> filteredColumn : filteredColumns) {
+                                if (filteredColumn.getText().equals(column.getText())) {
+                                    filteredColumn.setVisible(column.isVisible());
+                                }
+                            }
+                            i++;
+                        }
+                        tableControls.getChildren().remove(0);
+                        tableControls.getChildren().add(0, checks);
+                    } catch (SQLException e) {
+                        new ErrorBox("Error", "Could not filter values from table", TableViz.formatLongSQLError(e),
+                                false).show();
+                    }
+                });
+                box.setPrompts(prompts);
+                try {
+                    box.show("WhereClauseInputPromptController");
                 } catch (IOException e) {
                     TableViz.panic(e);
                 }
@@ -416,6 +485,8 @@ public class MainUIController {
                 try {
                     handler.commitChanges();
                     loadTable(table);
+                    rowDetails.setVisible(false);
+                    rowDetails.getChildren().clear();
                 } catch (SQLException e) {
                     new ErrorBox("Error", "Could not commit changes", TableViz.formatLongSQLError(e), false).show();
                 }
@@ -429,6 +500,8 @@ public class MainUIController {
                 try {
                     handler.discardChanges();
                     loadTable(table);
+                    rowDetails.setVisible(false);
+                    rowDetails.getChildren().clear();
                 } catch (SQLException e) {
                     new ErrorBox("Error", "Could not rollback changes", TableViz.formatLongSQLError(e), false).show();
                 }
@@ -444,7 +517,6 @@ public class MainUIController {
             tableControls.getChildren().addAll(columnChecks, container);
             tableControls.setMinHeight(200);
 
-            tableView.getColumns().setAll(columns);
             stage.setTitle("TableViz - " + tableName);
         } catch (SQLException e) {
             new ErrorBox("Warning", "Could not load table data", TableViz.formatLongSQLError(e), false).show();
@@ -468,6 +540,7 @@ public class MainUIController {
     private String table = "";
     private MenuItem refreshButton = null;
     private boolean isTransaction = false;
+    private Vector<TableColumn<Map, String>> tableCols = null;
 
     public Stage stage = null;
     public SQLHandler handler = null;
