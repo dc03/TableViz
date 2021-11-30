@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.image.ImageView;
@@ -16,7 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -147,7 +148,6 @@ public class MainUIController {
             tableControls.setVisible(true);
             rowDetails.setVisible(false);
             rowDetails.getChildren().clear();
-//            data_controls.setVisible(true);
 
             if (refreshButton != null) {
                 refreshButton.setDisable(false);
@@ -256,13 +256,31 @@ public class MainUIController {
                 delete.setOnAction(event -> {
                     try {
                         handler.deleteRow(tableName, row);
-                        loadTable(table);
+                        tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
+                        rowDetails.setVisible(false);
+                        rowDetails.getChildren().clear();
                     } catch (SQLException e) {
                         new ErrorBox("Error", "Could not delete row", TableViz.formatLongSQLError(e), false).show();
                     }
                 });
                 Button update = new Button("Update");
                 update.setOnAction(event -> {
+                    try {
+                        Map<String, String> selected = (Map<String, String>) tableView.getSelectionModel().getSelectedItem();
+                        HashMap<String, String> newValues = new HashMap<>();
+                        ObservableList<Node> children = details.getChildren();
+                        for (int j = 0; j < children.size(); j += 4) {
+                            Label columnName = (Label) children.get(j);
+                            TextField columnValue = (TextField) (((HBox) children.get(j + 2)).getChildren().get(0));
+                            newValues.put(columnName.getText(), columnValue.getText());
+                        }
+                        handler.updateRow(table, selected, newValues);
+                        tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
+                        tableView.getItems().add(newValues);
+                        tableView.getSelectionModel().select(newValues);
+                    } catch (SQLException e) {
+                        new ErrorBox("Error", "Could not update row", TableViz.formatLongSQLError(e), false).show();
+                    }
                 });
 
                 HBox buttons = new HBox();
@@ -391,6 +409,7 @@ public class MainUIController {
                 isTransaction = true;
                 commit.setDisable(false);
                 discardChanges.setDisable(false);
+                transactEnable.setDisable(true);
             });
 
             commit.setOnAction(event -> {
@@ -401,8 +420,9 @@ public class MainUIController {
                     new ErrorBox("Error", "Could not commit changes", TableViz.formatLongSQLError(e), false).show();
                 }
                 isTransaction = false;
-                commit.setDisable(false);
-                discardChanges.setDisable(false);
+                commit.setDisable(true);
+                discardChanges.setDisable(true);
+                transactEnable.setDisable(false);
             });
 
             discardChanges.setOnAction(event -> {
@@ -415,6 +435,7 @@ public class MainUIController {
                 isTransaction = false;
                 commit.setDisable(true);
                 discardChanges.setDisable(true);
+                transactEnable.setDisable(false);
             });
 
             container.getChildren().addAll(delete, insert, filter, transactEnable, commit, discardChanges);
@@ -441,7 +462,6 @@ public class MainUIController {
         }
     }
 
-//    private final HBox data_controls = new HBox();
     private final Menu file = new Menu("File");
     private final Menu options = new Menu("Options");
     private final Menu help = new Menu("Help");

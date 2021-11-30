@@ -80,15 +80,46 @@ public class SQLHandler {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             query.append("`").append(entry.getKey()).append("` = '").append(entry.getValue()).append("'");
             if (i < values.size() - 1) {
-                query.append(" and ");
+                query.append(" AND ");
             }
             i++;
         }
+        query.append(" LIMIT 1");
         statement.executeUpdate(query.toString());
     }
 
-    public void updateRow(Map<String, String> oldValues, Map<String, String> newValues) {
+    public void updateRow(String tableName, Map<String, String> oldValues, Map<String, String> newValues) throws SQLException {
+        assert oldValues.size() == newValues.size();
 
+        long ineqCount =
+                oldValues.entrySet().stream().filter(e -> !e.getValue().equals(newValues.get(e.getKey()))).count();
+        if (ineqCount == 0) {
+            return;
+        }
+
+        StringBuilder query = new StringBuilder("UPDATE `" + tableName + "` SET ");
+        int j = 0;
+        for (Map.Entry<String, String> e : oldValues.entrySet()) {
+            if (!e.getValue().equals(newValues.get(e.getKey()))) {
+                query.append("`").append(e.getKey()).append("` = ").append("'").append(newValues.get(e.getKey())).append("'");
+                if (j < ineqCount - 1) {
+                    query.append(", ");
+                }
+                j++;
+            }
+        }
+
+        query.append(" WHERE ");
+        int i = 0;
+        for (Map.Entry<String, String> e : oldValues.entrySet()) {
+            query.append("`").append(e.getKey()).append("` = ").append("'").append(e.getValue()).append("'");
+            if (i < oldValues.size() - 1) {
+                query.append(" AND ");
+            }
+            i++;
+        }
+        query.append(" LIMIT 1");
+        connection.createStatement().executeUpdate(query.toString());
     }
 
     public void beginTransaction() throws SQLException {
