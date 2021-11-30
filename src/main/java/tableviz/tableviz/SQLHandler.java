@@ -57,20 +57,7 @@ public class SQLHandler {
         Statement statement = connection.createStatement();
         ResultSet result = statement.executeQuery("SELECT * FROM " + tableName);
 
-        ResultSetMetaData metaData = result.getMetaData();
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            columns.put(metaData.getColumnName(i), "");
-        }
-
-        while (result.next()) {
-            Map<String, String> data = new HashMap<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                data.put(metaData.getColumnName(i), result.getString(i));
-            }
-            rows.add(new TableRow(data));
-        }
-
-        return new TableData(new TableRow(columns), rows);
+        return createTableData(columns, rows, result);
     }
 
     public void deleteRow(String tableName, Map<String, String> values) throws SQLException {
@@ -150,5 +137,42 @@ public class SQLHandler {
         }
         query.append(")");
         connection.createStatement().executeUpdate(query.toString());
+    }
+
+    public TableData filterValues(String tableName, Map<String, String> filters) throws SQLException {
+        Map<String, String> columns = new HashMap<>();
+        Vector<TableRow> rows = new Vector<>();
+
+        Statement statement = connection.createStatement();
+        StringBuilder query = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+        int j = 0;
+        for (Map.Entry<String, String> filter : filters.entrySet()) {
+            query.append("`").append(filter.getKey()).append("`").append(filter.getValue());
+            if (j < filters.size() - 1) {
+                query.append(" AND ");
+            }
+            j++;
+        }
+
+        System.out.println(query);
+        ResultSet result = statement.executeQuery(query.toString());
+        return createTableData(columns, rows, result);
+    }
+
+    private TableData createTableData(Map<String, String> columns, Vector<TableRow> rows, ResultSet result) throws SQLException {
+        ResultSetMetaData metaData = result.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            columns.put(metaData.getColumnName(i), "");
+        }
+
+        while (result.next()) {
+            Map<String, String> data = new HashMap<>();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                data.put(metaData.getColumnName(i), result.getString(i));
+            }
+            rows.add(new TableRow(data));
+        }
+
+        return new TableData(new TableRow(columns), rows);
     }
 }
