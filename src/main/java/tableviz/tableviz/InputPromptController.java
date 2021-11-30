@@ -20,7 +20,7 @@ public class InputPromptController {
     @FXML
     private VBox mainContainer = new VBox();
     @FXML
-    private GridPane container = new GridPane();
+    protected GridPane container = new GridPane();
     @FXML
     private Button submitButton = new Button();
     @FXML
@@ -49,7 +49,7 @@ public class InputPromptController {
         onSubmit = onSubmit_;
     }
 
-    public void setPrompts(String... names) {
+    protected void createLabelsAndInputs(String... names) {
         int i = 0;
         for (String name : names) {
             labels.add(new Label(name));
@@ -68,17 +68,24 @@ public class InputPromptController {
             }
             i++;
         }
+    }
 
+    protected void addLabelsToContainer() {
         for (int j = 0; j < labels.size(); j++) {
             container.add(labels.get(j), 0, j);
             Label jank = new Label();
             jank.getStyleClass().add("jank");
             container.add(jank, 1, j);
         }
+
+    }
+
+    public void setPrompts(String... names) {
+        createLabelsAndInputs(names);
+        addLabelsToContainer();
         for (int j = 0; j < inputs.size(); j++) {
             container.add(inputs.get(j), 2, j);
         }
-
     }
 
     public void setTextAreas(Integer[] areas) {
@@ -120,13 +127,13 @@ public class InputPromptController {
         cancelButton.setVisible(true);
     }
 
-    private final Vector<Label> labels = new Vector<>();
-    private final Vector<Node> inputs = new Vector<>();
-    private InputPromptOnSubmit onSubmit = null;
-    private boolean isCancellable = false;
-    private int passwordPrompt = -1;
-    private Vector<Integer> textAreas = new Vector<>();
-    private HashMap<Integer, String> defaultPrompts = new HashMap<>();
+    protected final Vector<Label> labels = new Vector<>();
+    protected final Vector<Node> inputs = new Vector<>();
+    protected InputPromptOnSubmit onSubmit = null;
+    protected boolean isCancellable = false;
+    protected int passwordPrompt = -1;
+    protected Vector<Integer> textAreas = new Vector<>();
+    protected HashMap<Integer, String> defaultPrompts = new HashMap<>();
 
     public Stage stage = null;
 }

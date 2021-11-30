@@ -33,12 +33,11 @@ public class InputPromptBox {
         passwordPrompt = passwordPrompt_;
     }
 
-    public void show() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("input-prompt-view.fxml"));
-        Scene scene = new Scene(loader.load());
-        InputPromptController controller = loader.getController();
+    private void setControllerValuesAndShow(InputPromptController controller, Scene scene) {
         controller.setPasswordInput(passwordPrompt);
-        controller.setTextAreas(textAreas);
+        if (textAreas != null) {
+            controller.setTextAreas(textAreas);
+        }
         controller.setDefaultPrompts(defaultPrompts);
         controller.setPrompts(prompts);
         controller.setOnSubmit(onSubmit);
@@ -47,13 +46,26 @@ public class InputPromptBox {
         if (isCancellable) {
             controller.showCancelButton();
         }
-
         Stage stage = new Stage();
-        controller.setStage(stage);
         stage.setScene(scene);
         stage.setTitle("Input");
         stage.show();
         stage.setResizable(false);
+        controller.setStage(stage);
+    }
+
+    public void show(String kind) throws IOException {
+        if (kind.equals("InputPromptController")) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("input-prompt-view.fxml"));
+            Scene scene = new Scene(loader.load());
+            InputPromptController controller = loader.getController();
+            setControllerValuesAndShow(controller, scene);
+        } else if (kind.equals("WhereClauseInputPromptController")) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("where-clause-input-prompt-view.fxml"));
+            Scene scene = new Scene(loader.load());
+            WhereClauseInputPromptController controller = loader.getController();
+            setControllerValuesAndShow(controller, scene);
+        }
     }
 
     public void setCancellable(boolean value) {
