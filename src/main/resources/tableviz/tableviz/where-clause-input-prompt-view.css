@@ -1,0 +1,16 @@
+@import "input-prompt-view.css";
+
+.choice-box {
+    -fx-border-color: #ffddc1;
+    -fx-background-color: white;
+    -fx-border-radius: 5px;
+    -fx-font-family: "JetBrains Mono", "Fira Code";
+}
+
+.cb-container {
+    -fx-padding: 10px 0px 10px 0px;
+}
+
+.jank2 {
+    -fx-padding: 0px 0px 0px 10px;
+}
